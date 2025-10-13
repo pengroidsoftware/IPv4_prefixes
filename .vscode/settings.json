@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "ipv4_types.h": "c",
+        "stdio.h": "c"
     }
 }

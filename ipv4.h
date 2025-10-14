@@ -6,7 +6,7 @@
 
 /* API functions */
 
-int add_ipv4_prefix(ipv4_t base, uint8_t mask);
+int add_ipv4_prefix(prefix_t ip_prefix);
 int del_ipv4_prefix(ipv4_t base, uint8_t mask);
 char check_ipv4(prefix_t ip);
 

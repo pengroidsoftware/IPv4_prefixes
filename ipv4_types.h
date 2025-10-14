@@ -8,6 +8,11 @@ typedef struct{
     uint8_t ipv4_2;
     uint8_t ipv4_3;
     uint8_t ipv4_4;
+}ipv4_struct_t;
+
+typedef union{
+    ipv4_struct_t ipv4_address_struct_data;
+    uint32_t ipv4_address_raw_data;
 }ipv4_t;
 
 typedef struct {

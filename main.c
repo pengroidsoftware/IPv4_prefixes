@@ -3,52 +3,79 @@
 #include "ipv4_types.h"
 #include "errno.h"
 
-extern prefix_t prefixes_collections[];
-
-prefix_t temp = {{10,20,0,0},16};
-prefix_t temp1 = {{50,0,0,2},255};
-prefix_t temp2 = {{32,64,128,0},20};
-
-int main()
+void dev_tests()
 {
-    printf("Hello everyone :) IPv4_prefixes !\n");
+    prefix_t temp = {{10,20,0,0},16};
+    prefix_t temp1 = {{50,0,0,2},255};
+    prefix_t temp2 = {{168,64,128,0},20};
 
-    printf_prefix(prefixes_collections[0]);
-    printf_prefix(prefixes_collections[1]);
-    printf_prefix(prefixes_collections[2]);
+    prefix_t tempa = {{5,20,0,0},16};
+    prefix_t temp1a = {{50,0,0,2},32};
+    prefix_t temp2a = {{50,0,0,2},32};
+
+    prefix_t not_existing = {{99,0,0,2},255};
+
+    printf_collection();
 
     if(add_ipv4_prefix(temp) != E_OK)
     {
         // TO DO error here
     }
 
-    printf(" *** \n");
-
-    printf_prefix(prefixes_collections[0]);
-    printf_prefix(prefixes_collections[1]);
-    printf_prefix(prefixes_collections[2]);
+    printf_collection();
 
     if(add_ipv4_prefix(temp1) != E_OK)
     {
         // TO DO error here
     }
 
-    printf(" *** \n");
-
-    printf_prefix(prefixes_collections[0]);
-    printf_prefix(prefixes_collections[1]);
-    printf_prefix(prefixes_collections[2]);
+    printf_collection();
 
     if(add_ipv4_prefix(temp2) != E_OK)
     {
         // TO DO error here
     }
 
-    printf(" *** \n");
+    printf_collection();
 
-    printf_prefix(prefixes_collections[0]);
-    printf_prefix(prefixes_collections[1]);
-    printf_prefix(prefixes_collections[2]);
-    
+    if(add_ipv4_prefix(tempa) != E_OK)
+    {
+        // TO DO error here
+    }
+
+    printf_collection();
+
+    if(add_ipv4_prefix(temp1a) != E_OK)
+    {
+        // TO DO error here
+    }
+
+    printf_collection();
+
+    if(add_ipv4_prefix(temp2a) != E_OK)
+    {
+        // TO DO error here
+    }
+
+    printf_collection();
+
+    if(del_ipv4_prefix(temp2a) != E_OK)
+    {
+        // TO DO error here
+    }
+
+    printf_collection();
+
+    if(del_ipv4_prefix(not_existing) != E_OK)
+    {
+        // TO DO error here
+    }
+
+    printf_collection();
+}
+
+int main()
+{
+    dev_tests();
     return E_OK;
 }

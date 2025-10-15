@@ -304,8 +304,7 @@ uint8_t check_ipv4(uint32_t ip){
             return E_OK;
         }
       }
-    printf(">^< Checked prefix NOT found: "); printf_prefix(ip_prefix);
-
+    printf(">^< Checked prefix NOT found\n");
 
     return E_NOT_FOUND;
 }

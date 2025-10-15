@@ -14,12 +14,6 @@
 prefix_t prefixes_collections[PREFIXES_BUFFOR_NUMBER] = {0};
 uint32_t prefixes_collections_cnt = 0u;
 
-static uint32_t swap_uint32( uint32_t val )
-{
-    val = ((val << 8) & 0xFF00FF00 ) | ((val >> 8) & 0xFF00FF ); 
-    return (val << 16) | (val >> 16);
-}
-
 static bool check_if_prefix_exists(prefix_t ip_prefix, uint8_t* index){
 
     /* No elements */
@@ -29,20 +23,20 @@ static bool check_if_prefix_exists(prefix_t ip_prefix, uint8_t* index){
     if(prefixes_collections_cnt == 1){
         if(index != NULL) *index = 0u;
         return (
-                 (prefixes_collections[0].ip_address.ipv4_address_raw_data == swap_uint32(ip_prefix.ip_address.ipv4_address_raw_data)) && 
+                 (prefixes_collections[0].ip_address.ipv4_address_raw_data == ip_prefix.ip_address.ipv4_address_raw_data) && 
                  (prefixes_collections[0].mask == ip_prefix.mask)
                ) 
                 ? true : false;
     }
 
     /* Chek edges if the comparison is not necessary*/
-    if(prefixes_collections[prefixes_collections_cnt-1].ip_address.ipv4_address_raw_data < swap_uint32(ip_prefix.ip_address.ipv4_address_raw_data)) 
+    if(prefixes_collections[prefixes_collections_cnt-1].ip_address.ipv4_address_raw_data < ip_prefix.ip_address.ipv4_address_raw_data) 
     {
         /* New bigger base prefix, not already added one, skipp */
         return false;
     }
 
-    if(prefixes_collections[0].ip_address.ipv4_address_raw_data > swap_uint32(ip_prefix.ip_address.ipv4_address_raw_data)) 
+    if(prefixes_collections[0].ip_address.ipv4_address_raw_data > ip_prefix.ip_address.ipv4_address_raw_data) 
     {
         /* New smaller base prefix, skipp */
         return false;
@@ -58,7 +52,7 @@ static bool check_if_prefix_exists(prefix_t ip_prefix, uint8_t* index){
         
         mid = ( low_index + high_index ) >> 1; /* mid == (low + high) / 2 */
 
-        if (prefixes_collections[mid].ip_address.ipv4_address_raw_data == swap_uint32(ip_prefix.ip_address.ipv4_address_raw_data)) 
+        if (prefixes_collections[mid].ip_address.ipv4_address_raw_data == ip_prefix.ip_address.ipv4_address_raw_data) 
         {
 #ifdef DEBUG
             printf ("DEBUG: Found the same base\n");
@@ -86,7 +80,7 @@ static bool check_if_prefix_exists(prefix_t ip_prefix, uint8_t* index){
                     keep_looking_flag = false;
                     n++;
 
-                    if(prefixes_collections[mid - n].ip_address.ipv4_address_raw_data == swap_uint32(ip_prefix.ip_address.ipv4_address_raw_data))
+                    if( (n <= mid) && (prefixes_collections[mid - n].ip_address.ipv4_address_raw_data == ip_prefix.ip_address.ipv4_address_raw_data))
                     {
                         /* Compare mask */
                         if(prefixes_collections[mid-n].mask == ip_prefix.mask)
@@ -103,7 +97,7 @@ static bool check_if_prefix_exists(prefix_t ip_prefix, uint8_t* index){
                         }
                     }
 
-                    if(prefixes_collections[mid + n].ip_address.ipv4_address_raw_data == swap_uint32(ip_prefix.ip_address.ipv4_address_raw_data))
+                    if(((mid + n) <= PREFIXES_BUFFOR_NUMBER) && (prefixes_collections[mid + n].ip_address.ipv4_address_raw_data == ip_prefix.ip_address.ipv4_address_raw_data))
                     {
                         /* Compare mask */
                         if(prefixes_collections[mid+n].mask == ip_prefix.mask)
@@ -127,7 +121,7 @@ static bool check_if_prefix_exists(prefix_t ip_prefix, uint8_t* index){
         }
 
         /* Target is may be the right side*/
-        if (prefixes_collections[mid].ip_address.ipv4_address_raw_data < swap_uint32(ip_prefix.ip_address.ipv4_address_raw_data)) {
+        if (prefixes_collections[mid].ip_address.ipv4_address_raw_data < ip_prefix.ip_address.ipv4_address_raw_data) {
             low_index = mid + 1;
         }
         /* Target may be on the lef side*/
@@ -161,16 +155,16 @@ static void clear_item(prefix_t* item1)
     item1->mask = 0u;
 }
 
-static int write_new_prefix(prefix_t ip_prefix)
+static int8_t write_new_prefix(prefix_t ip_prefix)
 {
-    if(prefixes_collections_cnt < PREFIXES_BUFFOR_NUMBER)
+    if(prefixes_collections_cnt < PREFIXES_BUFFOR_NUMBER - 1 ) // check if there is place fore one more, the prefixes_collections_cnt points to the next free in this moment
     {
         /* INFO Sorted collection will be easier and more efficintly to check frequently -> time lost here for sorting will be get while checking IP addresses */
 
         /* Add new prefix at the and of collection and sort collection from the smaller base*/
         prefixes_collections_cnt;
 
-        prefixes_collections[prefixes_collections_cnt].ip_address.ipv4_address_raw_data = swap_uint32(ip_prefix.ip_address.ipv4_address_raw_data);
+        prefixes_collections[prefixes_collections_cnt].ip_address.ipv4_address_raw_data = ip_prefix.ip_address.ipv4_address_raw_data;
         prefixes_collections[prefixes_collections_cnt].mask = ip_prefix.mask;
 
         for(int i = prefixes_collections_cnt; i > 0; i--)
@@ -198,7 +192,7 @@ static int write_new_prefix(prefix_t ip_prefix)
 
 }
 
-static int remove_prefix(uint8_t index)
+static int8_t remove_prefix(uint8_t index)
 {
     if(prefixes_collections_cnt > 0) /* double check, already checked upper*/
     {
@@ -223,10 +217,10 @@ static int remove_prefix(uint8_t index)
 
 void printf_prefix(prefix_t prefix_input){
     printf("%d.%d.%d.%d/%d\n",
-        prefix_input.ip_address.ipv4_address_struct_data.ipv4_4,
-        prefix_input.ip_address.ipv4_address_struct_data.ipv4_3,
-        prefix_input.ip_address.ipv4_address_struct_data.ipv4_2,
         prefix_input.ip_address.ipv4_address_struct_data.ipv4_1,
+        prefix_input.ip_address.ipv4_address_struct_data.ipv4_2,
+        prefix_input.ip_address.ipv4_address_struct_data.ipv4_3,
+        prefix_input.ip_address.ipv4_address_struct_data.ipv4_4,
         prefix_input.mask
     );
 }
@@ -243,23 +237,35 @@ void printf_collection(){
 
 /* API functions */
 
-int add_ipv4_prefix(prefix_t ip_prefix){
+int8_t add_ipv4_prefix(prefix_t ip_prefix){
+
+int8_t errno_ret = E_NOT_EXIST;
+
+    if(ip_prefix.mask > 32) return E_INVALID_MASK;
 
     printf(">>> Add prefix: "); printf_prefix(ip_prefix);
 
     if(check_if_prefix_exists(ip_prefix, NULL) == true)
     {
-        printf(">>> Prefix already exists: "); printf_prefix(ip_prefix);
+        printf(">>> Prefix already exists\n");
         return E_ALREADY_ADDED;
     }
     else
     {
-        printf(">>> Prefix added: "); printf_prefix(ip_prefix);
-        return write_new_prefix(ip_prefix);
+        errno_ret = write_new_prefix(ip_prefix);
     }
+
+    if(errno_ret == E_OK) printf(">>> Prefix added\n");
+    else printf("<<< Prefix not added\n");
+    
+    return errno_ret;
 }
 
-int del_ipv4_prefix(prefix_t ip_prefix){
+int8_t del_ipv4_prefix(prefix_t ip_prefix){
+
+int8_t errno_ret = E_NOT_EXIST;
+
+    if(ip_prefix.mask > 32) return E_INVALID_MASK;
 
     printf("<<< Remove prefix: "); printf_prefix(ip_prefix);
 
@@ -267,42 +273,43 @@ int del_ipv4_prefix(prefix_t ip_prefix){
 
     if(check_if_prefix_exists(ip_prefix,&index) == false)
     {
-        printf("<<< Prefix NOT found: "); printf_prefix(ip_prefix);
+        printf("<<< Prefix NOT found\n");
         return E_NOT_EXIST;
     }
     else
     {
-        printf("<<< Prefix removed: "); printf_prefix(ip_prefix);
-        return remove_prefix(index);
+        errno_ret = remove_prefix(index);
     }
+
+    if(errno_ret == E_OK) printf("<<< Prefix removed\n");
+    else printf("<<< Prefix not removed\n");
+    
+    return errno_ret;
 }
-uint8_t check_ipv4(uint32_t ip){
+int8_t check_ipv4(uint32_t ip){
 
     prefix_t ip_prefix = {0u};
-    ip_prefix.ip_address.ipv4_address_raw_data = swap_uint32(ip);
-
+    ip_prefix.ip_address.ipv4_address_raw_data = ip;
+ 
     printf(">^< Check IP: "); printf_prefix(ip_prefix);
 
-    if (swap_uint32(ip) < prefixes_collections[0].ip_address.ipv4_address_raw_data) return E_NOT_EXIST;
-
-    /* iterate all mask*/
-    for(int16_t temp_mask = 32; temp_mask >= 0; temp_mask--)
+    /* Iterate all mask from the biggest*/
+    for(int8_t temp_mask = 32; temp_mask >= 0; temp_mask--)
     {
         /* prepare prefix variable with temporary mask*/
 
         uint32_t mask_bits = (-1) << (32 - temp_mask);
         ip_prefix.ip_address.ipv4_address_raw_data = ip & ~(mask_bits);
         ip_prefix.mask = (uint8_t)temp_mask;
-#ifdef DEBUG
-    printf(">^< Calculated prefix: "); printf_prefix(ip_prefix);
-#endif
 
         /* Check if calculated mask exists */
         if (check_if_prefix_exists(ip_prefix,NULL) == true ) 
         {
             printf(">^< Checked prefix found: "); printf_prefix(ip_prefix);
-            return E_OK;
+            return temp_mask;
+            //return E_OK;
         }
+
       }
     printf(">^< Checked prefix NOT found\n");
 

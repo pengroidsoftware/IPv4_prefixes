@@ -5,9 +5,9 @@
 #include "ipv4_types.h"
 
 /* API functions */
-int add_ipv4_prefix(prefix_t ip_prefix);
-int del_ipv4_prefix(prefix_t ip_prefix);
-uint8_t check_ipv4(uint32_t ip);
+int8_t add_ipv4_prefix(prefix_t ip_prefix);
+int8_t del_ipv4_prefix(prefix_t ip_prefix);
+int8_t check_ipv4(uint32_t ip);
 
 /* Debug function */
 void printf_prefix(prefix_t prefix_input);

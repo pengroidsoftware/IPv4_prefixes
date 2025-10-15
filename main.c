@@ -18,39 +18,39 @@ void random_dev_tests()
 
     printf_collection();
 
-    add_ipv4_prefix(temp);
+    add_ipv4_prefix(&temp);
 
     printf_collection();
 
-    add_ipv4_prefix(temp1);
+    add_ipv4_prefix(&temp1);
 
     printf_collection();
 
-    add_ipv4_prefix(temp2);
+    add_ipv4_prefix(&temp2);
 
     printf_collection();
 
-    add_ipv4_prefix(tempa);
+    add_ipv4_prefix(&tempa);
 
     printf_collection();
 
-    add_ipv4_prefix(temp1a);
+    add_ipv4_prefix(&temp1a);
 
     printf_collection();
 
-    add_ipv4_prefix(temp2a);
+    add_ipv4_prefix(&temp2a);
 
     printf_collection();
 
-    del_ipv4_prefix(temp2a);
+    del_ipv4_prefix(&temp2a);
 
     printf_collection();
 
-    del_ipv4_prefix(not_existing);
+    del_ipv4_prefix(&not_existing);
 
     printf_collection();
 
-    del_ipv4_prefix(not_existing);
+    del_ipv4_prefix(&not_existing);
 
     check_ipv4(not_existing.ip_address.ipv4_address_raw_data);
     check_ipv4(temp_copy.ip_address.ipv4_address_raw_data);
@@ -65,7 +65,7 @@ void adding_out_of_range_tests()
 
      for(int i = 0 ; i < 256; i++)
      {
-        error = add_ipv4_prefix(prefix);
+        error = add_ipv4_prefix(&prefix);
      }
 
      if(error != E_ALREADY_ADDED) printf (" FAIL ");
@@ -73,7 +73,7 @@ void adding_out_of_range_tests()
      for(int i = 0 ; i < 500; i++)
      {
         prefix.ip_address.ipv4_address_raw_data++;
-        error = add_ipv4_prefix(prefix);
+        error = add_ipv4_prefix(&prefix);
      }
 
      if(error != E_OUT_OF_SPACE) printf (" FAIL ");
@@ -89,7 +89,7 @@ void removing_test()
      for(int i = 0 ; i < 50; i++)
      {
         prefix.ip_address.ipv4_address_raw_data = i;
-        error = add_ipv4_prefix(prefix);
+        error = add_ipv4_prefix(&prefix);
      }
      
      printf_collection();
@@ -97,7 +97,7 @@ void removing_test()
      for(int i = 0 ; i < 50; i++)
      {
         prefix.ip_address.ipv4_address_raw_data = i;
-        error = del_ipv4_prefix(prefix);
+        error = del_ipv4_prefix(&prefix);
      }
 
      printf_collection();
@@ -114,7 +114,7 @@ void removing_out_of_range_test()
      for(int i = 0 ; i < 300; i++)
      {
         prefix.ip_address.ipv4_address_raw_data = i;
-        error = add_ipv4_prefix(prefix);
+        error = add_ipv4_prefix(&prefix);
      }
      
      printf_collection();
@@ -122,7 +122,7 @@ void removing_out_of_range_test()
      for(int i = 0 ; i < 300; i++)
      {
         prefix.ip_address.ipv4_address_raw_data = i;
-        error = del_ipv4_prefix(prefix);
+        error = del_ipv4_prefix(&prefix);
      }
 
      printf_collection();
@@ -139,7 +139,7 @@ void checking_out_of_range_test()
     for(int i = 0 ; i < 350; i++)
     {
         prefix.ip_address.ipv4_address_raw_data = i;
-        error = add_ipv4_prefix(prefix);
+        error = add_ipv4_prefix(&prefix);
     }
      
     printf_collection();
@@ -155,7 +155,7 @@ void checking_out_of_range_test()
     for(int i = 0 ; i < 350; i++)
     {
         prefix.ip_address.ipv4_address_raw_data = i;
-        error = del_ipv4_prefix(prefix);
+        error = del_ipv4_prefix(&prefix);
     }
 
     printf_collection();
@@ -167,8 +167,8 @@ int main()
     //random_dev_tests();
     //adding_out_of_range_tests();
     //removing_test();
-    removing_out_of_range_test();
-    //checking_out_of_range_test();
+    //removing_out_of_range_test();
+    checking_out_of_range_test();
 
     return E_OK;
 }

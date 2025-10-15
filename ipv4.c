@@ -8,16 +8,10 @@
 
 #define PREFIXES_BUFFOR_NUMBER 255
 
-#define DEBUG
+//#define DEBUG
 
 /* INFO Decided not to use dynamic memory allocation for data collection - not using heap in embedded solutions */
-prefix_t prefixes_collections[PREFIXES_BUFFOR_NUMBER] = {
-                                    // {{20,0,0,1},255},
-                                    // {{50,0,0,51},40},
-                                    // {{64,0,0,1},16}
-                                    {0}
-                                  };
-
+prefix_t prefixes_collections[PREFIXES_BUFFOR_NUMBER] = {0};
 uint32_t prefixes_collections_cnt = 0u;
 
 static uint32_t swap_uint32( uint32_t val )
@@ -206,7 +200,7 @@ static int write_new_prefix(prefix_t ip_prefix)
 
 static int remove_prefix(uint8_t index)
 {
-    if(prefixes_collections_cnt > 0)
+    if(prefixes_collections_cnt > 0) /* double check, already checked upper*/
     {
         /* Clear deleted item */
         clear_item(&prefixes_collections[index]);
@@ -251,39 +245,69 @@ void printf_collection(){
 
 int add_ipv4_prefix(prefix_t ip_prefix){
 
-#ifdef DEBUG
     printf(">>> Add prefix: "); printf_prefix(ip_prefix);
-#endif
 
     if(check_if_prefix_exists(ip_prefix, NULL) == true)
     {
+        printf(">>> Prefix already exists: "); printf_prefix(ip_prefix);
         return E_ALREADY_ADDED;
     }
     else
     {
+        printf(">>> Prefix added: "); printf_prefix(ip_prefix);
         return write_new_prefix(ip_prefix);
     }
 }
 
 int del_ipv4_prefix(prefix_t ip_prefix){
 
-#ifdef DEBUG
     printf("<<< Remove prefix: "); printf_prefix(ip_prefix);
-#endif
 
     uint8_t index = 0u;
 
     if(check_if_prefix_exists(ip_prefix,&index) == false)
     {
+        printf("<<< Prefix NOT found: "); printf_prefix(ip_prefix);
         return E_NOT_EXIST;
     }
     else
     {
+        printf("<<< Prefix removed: "); printf_prefix(ip_prefix);
         return remove_prefix(index);
     }
 }
-char check_ipv4(uint32_t ip){
-    return E_OK;
+uint8_t check_ipv4(uint32_t ip){
+
+    prefix_t ip_prefix = {0u};
+    ip_prefix.ip_address.ipv4_address_raw_data = swap_uint32(ip);
+
+    printf(">^< Check IP: "); printf_prefix(ip_prefix);
+
+    if (swap_uint32(ip) < prefixes_collections[0].ip_address.ipv4_address_raw_data) return E_NOT_EXIST;
+
+    /* iterate all mask*/
+    for(int16_t temp_mask = 32; temp_mask >= 0; temp_mask--)
+    {
+        /* prepare prefix variable with temporary mask*/
+
+        uint32_t mask_bits = (-1) << (32 - temp_mask);
+        ip_prefix.ip_address.ipv4_address_raw_data = ip & ~(mask_bits);
+        ip_prefix.mask = (uint8_t)temp_mask;
+#ifdef DEBUG
+    printf(">^< Calculated prefix: "); printf_prefix(ip_prefix);
+#endif
+
+        /* Check if calculated mask exists */
+        if (check_if_prefix_exists(ip_prefix,NULL) == true ) 
+        {
+            printf(">^< Checked prefix found: "); printf_prefix(ip_prefix);
+            return E_OK;
+        }
+      }
+    printf(">^< Checked prefix NOT found: "); printf_prefix(ip_prefix);
+
+
+    return E_NOT_FOUND;
 }
 
 /* *** */

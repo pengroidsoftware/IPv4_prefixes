@@ -6,6 +6,7 @@
 void dev_tests()
 {
     prefix_t temp = {{10,20,0,0},16};
+    prefix_t temp_copy = {{10,20,0,192},16};
     prefix_t temp1 = {{50,0,0,2},255};
     prefix_t temp2 = {{168,64,128,0},20};
 
@@ -17,59 +18,42 @@ void dev_tests()
 
     printf_collection();
 
-    if(add_ipv4_prefix(temp) != E_OK)
-    {
-        // TO DO error here
-    }
+    add_ipv4_prefix(temp);
 
     printf_collection();
 
-    if(add_ipv4_prefix(temp1) != E_OK)
-    {
-        // TO DO error here
-    }
+    add_ipv4_prefix(temp1);
 
     printf_collection();
 
-    if(add_ipv4_prefix(temp2) != E_OK)
-    {
-        // TO DO error here
-    }
+    add_ipv4_prefix(temp2);
 
     printf_collection();
 
-    if(add_ipv4_prefix(tempa) != E_OK)
-    {
-        // TO DO error here
-    }
+    add_ipv4_prefix(tempa);
 
     printf_collection();
 
-    if(add_ipv4_prefix(temp1a) != E_OK)
-    {
-        // TO DO error here
-    }
+    add_ipv4_prefix(temp1a);
 
     printf_collection();
 
-    if(add_ipv4_prefix(temp2a) != E_OK)
-    {
-        // TO DO error here
-    }
+    add_ipv4_prefix(temp2a);
 
     printf_collection();
 
-    if(del_ipv4_prefix(temp2a) != E_OK)
-    {
-        // TO DO error here
-    }
+    del_ipv4_prefix(temp2a);
 
     printf_collection();
 
-    if(del_ipv4_prefix(not_existing) != E_OK)
-    {
-        // TO DO error here
-    }
+    del_ipv4_prefix(not_existing);
+
+    printf_collection();
+
+    del_ipv4_prefix(not_existing);
+
+    check_ipv4(not_existing.ip_address.ipv4_address_raw_data);
+    check_ipv4(temp_copy.ip_address.ipv4_address_raw_data);
 
     printf_collection();
 }

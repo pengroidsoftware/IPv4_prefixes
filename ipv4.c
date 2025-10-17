@@ -16,6 +16,8 @@ uint32_t prefixes_collections_cnt = 0u;
 
 static bool check_if_prefix_exists(prefix_t* ip_prefix, uint8_t* index){
 
+    if(ip_prefix == NULL) return false;
+
     /* No elements */
     if(prefixes_collections_cnt < 1) return false;
 
@@ -137,6 +139,9 @@ static bool check_if_prefix_exists(prefix_t* ip_prefix, uint8_t* index){
 
 static void swap_items(prefix_t* item1, prefix_t* item2)
 {
+
+    if(item1 == NULL || item2 == NULL) return;
+    
     prefix_t temp;
 
     temp.ip_address.ipv4_address_raw_data = item1->ip_address.ipv4_address_raw_data;
@@ -151,12 +156,16 @@ static void swap_items(prefix_t* item1, prefix_t* item2)
 
 static void clear_item(prefix_t* item1)
 {
+    if(item1 == NULL) return;
+
     item1->ip_address.ipv4_address_raw_data = 0u;
     item1->mask = 0u;
 }
 
 static int8_t write_new_prefix(prefix_t* ip_prefix)
 {
+    if(ip_prefix == NULL) return E_NULL_EXCEPTION;
+
     if(prefixes_collections_cnt < PREFIXES_BUFFOR_NUMBER - 1 ) // check if there is place fore one more, the prefixes_collections_cnt points to the next free in this moment
     {
         /* INFO Sorted collection will be easier and more efficintly to check frequently -> time lost here for sorting will be get while checking IP addresses */
@@ -194,7 +203,7 @@ static int8_t write_new_prefix(prefix_t* ip_prefix)
 
 static int8_t remove_prefix(uint8_t index)
 {
-    if(prefixes_collections_cnt > 0) /* double check, already checked upper*/
+    if((prefixes_collections_cnt > 0) && (index < prefixes_collections_cnt)) /* double check, already checked upper*/
     {
         /* Clear deleted item */
         clear_item(&prefixes_collections[index]);
@@ -216,6 +225,9 @@ static int8_t remove_prefix(uint8_t index)
 /* Debug function */
 
 void printf_prefix(prefix_t* prefix_input){
+
+    if(prefix_input == NULL) return;
+
     printf("%d.%d.%d.%d/%d\n",
         prefix_input->ip_address.ipv4_address_struct_data.ipv4_1,
         prefix_input->ip_address.ipv4_address_struct_data.ipv4_2,
@@ -239,9 +251,10 @@ void printf_collection(){
 
 int8_t add_ipv4_prefix(prefix_t *ip_prefix){
 
-int8_t errno_ret = E_NOT_EXIST;
-
+    if(ip_prefix == NULL) return E_NULL_EXCEPTION;
     if(ip_prefix->mask > 32) return E_INVALID_MASK;
+
+    int8_t errno_ret = E_NOT_EXIST;
 
     printf(">>> Add prefix: "); printf_prefix(ip_prefix);
 
@@ -263,9 +276,10 @@ int8_t errno_ret = E_NOT_EXIST;
 
 int8_t del_ipv4_prefix(prefix_t* ip_prefix){
 
-int8_t errno_ret = E_NOT_EXIST;
-
+    if(ip_prefix == NULL) return E_NULL_EXCEPTION;
     if(ip_prefix->mask > 32) return E_INVALID_MASK;
+
+    int8_t errno_ret = E_NOT_EXIST;
 
     printf("<<< Remove prefix: "); printf_prefix(ip_prefix);
 

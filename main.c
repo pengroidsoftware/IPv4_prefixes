@@ -61,7 +61,7 @@ void random_dev_tests()
 void adding_out_of_range_tests()
 {
     int8_t error = E_OK;
-     prefix_t prefix =         {{10,20,0,0},16};
+    prefix_t prefix =         {{10,20,0,0},16};
 
      for(int i = 0 ; i < 256; i++)
      {

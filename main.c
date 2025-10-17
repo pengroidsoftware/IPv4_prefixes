@@ -152,6 +152,13 @@ void checking_out_of_range_test()
 
     printf_collection();
 
+    // delete one element in the middle
+
+    prefix.ip_address.ipv4_address_raw_data = 160;
+    del_ipv4_prefix(&prefix);
+
+    printf_collection();
+
     for(int i = 0 ; i < 350; i++)
     {
         prefix.ip_address.ipv4_address_raw_data = i;

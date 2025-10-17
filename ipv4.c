@@ -45,7 +45,6 @@ static bool check_if_prefix_exists(prefix_t* ip_prefix, uint8_t* index){
     }
 
     /* Use bisection algorithm to check if prefix exists*/
-
     uint8_t low_index = 0;
     uint8_t high_index = prefixes_collections_cnt - 1;
     uint32_t mid = 0;
@@ -99,7 +98,7 @@ static bool check_if_prefix_exists(prefix_t* ip_prefix, uint8_t* index){
                         }
                     }
 
-                    if(((mid + n) <= PREFIXES_BUFFOR_NUMBER) && (prefixes_collections[mid + n].ip_address.ipv4_address_raw_data == ip_prefix->ip_address.ipv4_address_raw_data))
+                    if(((mid + n) < prefixes_collections_cnt) && (prefixes_collections[mid + n].ip_address.ipv4_address_raw_data == ip_prefix->ip_address.ipv4_address_raw_data))
                     {
                         /* Compare mask */
                         if(prefixes_collections[mid+n].mask == ip_prefix->mask)
@@ -166,13 +165,11 @@ static int8_t write_new_prefix(prefix_t* ip_prefix)
 {
     if(ip_prefix == NULL) return E_NULL_EXCEPTION;
 
-    if(prefixes_collections_cnt < PREFIXES_BUFFOR_NUMBER - 1 ) // check if there is place fore one more, the prefixes_collections_cnt points to the next free in this moment
+    if(prefixes_collections_cnt < PREFIXES_BUFFOR_NUMBER) // check if there is place fore one more, the prefixes_collections_cnt points to the next free in this moment
     {
         /* INFO Sorted collection will be easier and more efficintly to check frequently -> time lost here for sorting will be get while checking IP addresses */
 
         /* Add new prefix at the and of collection and sort collection from the smaller base*/
-        prefixes_collections_cnt;
-
         prefixes_collections[prefixes_collections_cnt].ip_address.ipv4_address_raw_data = ip_prefix->ip_address.ipv4_address_raw_data;
         prefixes_collections[prefixes_collections_cnt].mask = ip_prefix->mask;
 
@@ -209,9 +206,9 @@ static int8_t remove_prefix(uint8_t index)
         clear_item(&prefixes_collections[index]);
 
         /* Move all items to the left*/
-        for(uint8_t i = index; i < prefixes_collections_cnt; i++){
+        for(uint8_t i = index; i < (prefixes_collections_cnt-1); i++){  // (prefixes_collections_cnt-1) index of last items in table
 
-            swap_items(&prefixes_collections[i],&prefixes_collections[i+1]);
+            swap_items(&prefixes_collections[i],&prefixes_collections[i+1]); // here we get next element in the table, so we need to itereate one less then last index
         }
 
         prefixes_collections_cnt--;
